@@ -1,8 +1,15 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #ecf1f7;
+  --foreground: #111827;
+  --surface: #f8fbff;
+  --surface-2: #eef3fb;
+  --border-strong: #cfd9e8;
+  --accent: #00cfc3;
+  --accent-strong: #00e9da;
+  --accent-ink: #052825;
 }
 
 @theme inline {
@@ -12,15 +19,58 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html.dark {
+  --background: #090f17;
+  --foreground: #eef4ff;
+  --surface: #111927;
+  --surface-2: #192334;
+  --border-strong: #2a374e;
+  --accent: #00d9cc;
+  --accent-strong: #0cf2e3;
+  --accent-ink: #032321;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  background-image:
+    radial-gradient(1200px 600px at 0% -10%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 55%),
+    radial-gradient(900px 500px at 100% -15%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 58%);
+}
+
+@layer components {
+  .hr-surface {
+    background: var(--surface);
+    border-color: var(--border-strong);
+  }
+
+  .hr-surface-soft {
+    background: var(--surface-2);
+    border-color: var(--border-strong);
+  }
+
+  .hr-accent-btn {
+    background: linear-gradient(
+      135deg,
+      var(--accent) 0%,
+      var(--accent-strong) 100%
+    );
+    color: var(--accent-ink);
+    border: 1px solid color-mix(in srgb, var(--accent) 60%, #fff 0%);
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--accent) 35%, transparent);
+  }
+
+  .hr-accent-btn:hover {
+    filter: brightness(1.04);
+  }
+
+  .hr-outline-btn {
+    border: 1px solid var(--border-strong);
+    background: color-mix(in srgb, var(--surface) 86%, transparent);
+  }
+
+  .hr-outline-btn:hover {
+    background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  }
 }

@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Headrush Community Tool (Next.js)
 
-## Getting Started
+This app is the UI foundation for your Headrush community platform.
 
-First, run the development server:
+## Current Features
+
+- Browse amps, cabs, and effects from `../DataFiles/headrush_library.json`
+- Google sign-in via NextAuth
+- Role model in place (`FREE`, `PAID`, `ADMIN`)
+- Role-protected admin route (`/admin`)
+- Prisma schema + seed script for importing model data to Postgres
+
+## Tech Stack
+
+- Next.js (App Router, TypeScript)
+- NextAuth (`next-auth`) + Google provider
+- Prisma + PostgreSQL
+- Tailwind CSS
+
+## Setup
+
+1. Copy env template:
+
+```bash
+cp .env.example .env.local
+```
+
+2. Fill in:
+- `DATABASE_URL`
+- `NEXTAUTH_SECRET`
+- `NEXTAUTH_URL`
+- `GOOGLE_CLIENT_ID`
+- `GOOGLE_CLIENT_SECRET`
+
+3. Generate Prisma client:
+
+```bash
+npm run db:generate
+```
+
+4. Run database migrations:
+
+```bash
+npm run db:migrate
+```
+
+5. Optional: seed model data into DB:
+
+```bash
+npm run db:seed
+```
+
+6. Promote an existing user to ADMIN (after first sign-in):
+
+```bash
+npm run user:make-admin -- user@example.com
+```
+
+7. Start dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Routes
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `/` - Landing + stats
+- `/models` - Model browser from `DataFiles/headrush_library.json`
+- `/login` - Google sign-in
+- `/dashboard` - Authenticated user area
+- `/admin` - ADMIN-only page
 
-## Learn More
+## Notes
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Current browser UI reads from JSON directly for fast iteration.
+- Prisma models are ready for a switch to DB-backed browsing when you want.

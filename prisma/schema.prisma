@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  FREE
+  PAID
+  ADMIN
+}
+
+enum ModelCategory {
+  AMP
+  CAB
+  EFFECT
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  role          UserRole  @default(FREE)
+  accounts      Account[]
+  sessions      Session[]
+  subscription  Subscription?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Subscription {
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  provider         String   @default("stripe")
+  plan             String   @default("free")
+  status           String   @default("inactive")
+  currentPeriodEnd DateTime?
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model HeadrushModel {
+  id         String           @id @default(cuid())
+  category   ModelCategory
+  kind       String
+  modelName  String
+  nodePath   String
+  inspiredBy String?
+  imageURL   String?
+  parameters ModelParameter[]
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  @@unique([category, modelName])
+  @@index([category])
+}
+
+model ModelParameter {
+  id          String        @id @default(cuid())
+  modelId     String
+  key         String
+  uiName      String
+  valueType   String
+  controlType String
+  min         Float?
+  max         Float?
+  step        Float?
+  format      String?
+  unit        String?
+  options     Json?
+  model       HeadrushModel @relation(fields: [modelId], references: [id], onDelete: Cascade)
+
+  @@index([modelId])
+  @@index([key])
+}
